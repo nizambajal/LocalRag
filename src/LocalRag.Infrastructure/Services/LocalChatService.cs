@@ -25,15 +25,50 @@ public sealed class LocalChatService : IChatService
         _http = http;
     }
 
+    //public async Task<string> AnswerAsync(
+    //    string question,
+    //    IReadOnlyList<DocumentChunk> contextChunks,
+    //    CancellationToken ct = default)
+    //{
+    //    _logger.LogInformation("OllamaMode={Mode} Model={Model}", _opts.OllamaMode, _opts.OllamaModel);
+
+    //    if (!_opts.OllamaMode)
+    //        return BuildNoLlmAnswer(question, contextChunks);
+
+    //    string prompt = BuildPrompt(question, contextChunks);
+    //    return await CallOllamaAsync(prompt, ct);
+    //}
+
     public async Task<string> AnswerAsync(
-        string question,
-        IReadOnlyList<DocumentChunk> contextChunks,
-        CancellationToken ct = default)
+    string question,
+    IReadOnlyList<DocumentChunk> contextChunks,
+    CancellationToken ct = default)
     {
+        // ── Emergency debug — log every chunk being sent to Ollama ────────────
+        _logger.LogInformation("=== CHUNKS SENT TO LLM ===");
+        _logger.LogInformation("Question: {Q}", question);
+        _logger.LogInformation("Total chunks: {N}", contextChunks.Count);
+
+        for (int i = 0; i < contextChunks.Count; i++)
+        {
+            _logger.LogInformation(
+                "Chunk[{I}] Page={P} Index={CI} Content={Content}",
+                i,
+                contextChunks[i].PageNumber,
+                contextChunks[i].ChunkIndex,
+                contextChunks[i].Content[..Math.Min(150, contextChunks[i].Content.Length)]);
+        }
+
+        _logger.LogInformation("=== END CHUNKS ===");
+
         if (!_opts.OllamaMode)
             return BuildNoLlmAnswer(question, contextChunks);
 
         string prompt = BuildPrompt(question, contextChunks);
+
+        // ── Log the full prompt ───────────────────────────────────────────────
+        _logger.LogInformation("=== FULL PROMPT ===\n{Prompt}", prompt);
+
         return await CallOllamaAsync(prompt, ct);
     }
 
@@ -59,8 +94,19 @@ public sealed class LocalChatService : IChatService
         // Factual = short specific lookups
         var factualKeywords = new[]
         {
-            "what is", "who is", "what's", "when", "where",
-            "email", "phone", "contact", "name", "date", "address"
+            "what is", "who is", "who are", "who am",
+            "what's", "when", "where",
+            "email", "phone", "contact",
+            "name", "date", "address",
+            // ── Identity questions ────────────────────────────────────
+            "who is this",
+            "whose",
+            "this person",
+            "this resume",
+            "this cv",
+            "this document",
+            "tell me about this person",
+            "introduce"
         };
 
         // Summarisation = open-ended career/skill questions
@@ -95,24 +141,27 @@ public sealed class LocalChatService : IChatService
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("You are a precise document assistant.");
+        sb.AppendLine("You are a resume analysis assistant.");
         sb.AppendLine("RULES:");
-        sb.AppendLine("- Answer using ONLY the information from the CONTEXT below.");
+        sb.AppendLine("- The CONTEXT below is extracted from a person's resume/CV.");
+        sb.AppendLine("- Answer using ONLY information present in the CONTEXT.");
         sb.AppendLine("- Copy names, emails, and technical terms EXACTLY as written.");
-        sb.AppendLine("- Be direct and concise — one or two sentences maximum.");
-        sb.AppendLine("- If the answer is not in the context, say: I don't know.");
+        sb.AppendLine("- For identity questions: look for the person's name, title, and contact info.");
+        sb.AppendLine("- Be direct — answer in 2-3 sentences maximum.");
+        sb.AppendLine("- If the answer is not in the context, say: The information is not available in the provided context.");
         sb.AppendLine();
-        sb.AppendLine("CONTEXT:");
+        sb.AppendLine("CONTEXT (resume content):");
 
         for (int i = 0; i < chunks.Count; i++)
         {
-            sb.AppendLine($"[{i + 1}] (Page {chunks[i].PageNumber})");
+            sb.AppendLine($"--- Section {i + 1} (Page {chunks[i].PageNumber}, Chunk {chunks[i].ChunkIndex}) ---");
             sb.AppendLine(chunks[i].Content);
             sb.AppendLine();
         }
 
         sb.AppendLine($"QUESTION: {question}");
-        sb.AppendLine("ANSWER:");
+        sb.AppendLine();
+        sb.AppendLine("ANSWER (direct, use exact names from context):");
 
         return sb.ToString();
     }

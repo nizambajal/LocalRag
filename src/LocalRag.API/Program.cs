@@ -33,11 +33,21 @@ builder.Services.AddSwaggerGen(c =>
 // ── CORS for Angular ──────────────────────────────────────────────────────────
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
-    .Get<string[]>() ?? ["http://localhost:4200"];
+    .Get<string[]>() ?? ["http://localhost:4200", "http://192.168.0.109:4200"];
+
+//builder.Services.AddCors(opt =>
+//    opt.AddDefaultPolicy(p =>
+//        p.WithOrigins(allowedOrigins)
+//         .AllowAnyMethod()
+//         .AllowAnyHeader()));
+
+builder.WebHost.UseUrls(
+    "http://0.0.0.0:51413"
+);
 
 builder.Services.AddCors(opt =>
     opt.AddDefaultPolicy(p =>
-        p.WithOrigins(allowedOrigins)
+        p.AllowAnyOrigin()
          .AllowAnyMethod()
          .AllowAnyHeader()));
 
