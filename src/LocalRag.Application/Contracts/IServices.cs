@@ -35,6 +35,13 @@ public interface IVectorStore
         float[] queryVector, int topK = 5, CancellationToken ct = default);
     Task SaveAsync(CancellationToken ct = default);
     Task LoadAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Every indexed chunk, unfiltered. Used to reconstruct full document
+    /// text (e.g. for the sandboxed CV quality-check tool) — not for
+    /// relevance search, which stays on <see cref="SearchAsync"/>.
+    /// </summary>
+    Task<IReadOnlyList<DocumentChunk>> GetAllChunksAsync(CancellationToken ct = default);
 }
 
 // ── BM25 Keyword Index ────────────────────────────────────────────────────────
@@ -95,4 +102,53 @@ public interface IHybridSearchService
         float vectorWeight = 0.7f,
         float bm25Weight = 0.3f,
         CancellationToken ct = default);
+}
+
+// ── Job Description Extraction ────────────────────────────────────────────────
+/// <summary>
+/// Extracts structured requirements from a free-text job description.
+/// Extraction only — never judges candidate fit; that's the agent's job.
+/// </summary>
+public interface IJobDescriptionExtractor
+{
+    Task<JobDescriptionAnalysis> ExtractAsync(
+        string jobDescriptionText, CancellationToken ct = default);
+}
+
+// ── Skill Classification ───────────────────────────────────────────────────────
+/// <summary>
+/// Classifies a single skill against CV evidence already retrieved via hybrid
+/// search. Never called with zero evidence — the caller short-circuits that
+/// case to "Missing" deterministically instead of asking the LLM.
+/// </summary>
+public interface ISkillClassifier
+{
+    Task<(string Classification, string Reasoning)> ClassifyAsync(
+        string skill,
+        IReadOnlyList<HybridSearchResult> evidence,
+        CancellationToken ct = default);
+}
+
+// ── Interview Question Generation ─────────────────────────────────────────────
+/// <summary>
+/// Generates categorized interview questions from a skill-gap report. Model
+/// answers are only ever attached to Candidate-Specific questions grounded
+/// in Strong Match CV evidence — never fabricated.
+/// </summary>
+public interface IInterviewQuestionGenerator
+{
+    Task<List<InterviewQuestion>> GenerateAsync(
+        SkillGapReport skillGap, CancellationToken ct = default);
+}
+
+// ── CV Tailoring ───────────────────────────────────────────────────────────────
+/// <summary>
+/// Generates tailored CV sections from a skill-gap report. Every bullet must
+/// be grounded in CV evidence and labeled Existing Experience or Suggested
+/// Wording — never fabricated experience.
+/// </summary>
+public interface ICvTailoringGenerator
+{
+    Task<List<TailoredCvSection>> GenerateAsync(
+        SkillGapReport skillGap, CancellationToken ct = default);
 }

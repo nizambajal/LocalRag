@@ -361,5 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/scripts/setup-trueforge.sh
 /src/data/faiss/metadata.json
 /src/data/faiss/lucene/

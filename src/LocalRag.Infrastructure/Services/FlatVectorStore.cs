@@ -136,6 +136,13 @@ public sealed class FlatVectorStore : IVectorStore
             "Vector store loaded: {Count} chunks from {Path}", loaded.Count, path);
     }
 
+    public Task<IReadOnlyList<DocumentChunk>> GetAllChunksAsync(CancellationToken ct = default)
+    {
+        _lock.EnterReadLock();
+        try { return Task.FromResult<IReadOnlyList<DocumentChunk>>([.. _chunks]); }
+        finally { _lock.ExitReadLock(); }
+    }
+
     // ── Math ──────────────────────────────────────────────────────────────────
 
     /// <summary>

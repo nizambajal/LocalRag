@@ -1,13 +1,17 @@
 <Solution>
-  <Project Path="src/LocalRag.Domain/LocalRag.Domain.csproj" />
-  <Project Path="src/LocalRag.Application/LocalRag.Application.csproj" />
-  <Project Path="src/LocalRag.Infrastructure/LocalRag.Infrastructure.csproj" />
   <Folder Name="/models/" />
   <Folder Name="/models/onnx/">
     <File Path="../../../Downloads/all-MiniLM-L6-v2.onnx" />
     <File Path="tokenizer.json" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="ReadMe.md" />
+  </Folder>
   <Project Path="src/LocalRag.API/LocalRag.API.csproj" />
+  <Project Path="src/LocalRag.Application/LocalRag.Application.csproj" />
+  <Project Path="src/LocalRag.Domain/LocalRag.Domain.csproj" />
+  <Project Path="src/LocalRag.Infrastructure/LocalRag.Infrastructure.csproj" />
+  <Project Path="src/LocalRag.Mcp/LocalRag.Mcp.csproj" />
   <Project Path="src/LocalRag.Worker/LocalRag.Worker.csproj" />
   <Project Path="tests/LocalRag.Tests/LocalRag.Tests.csproj" />
 </Solution>

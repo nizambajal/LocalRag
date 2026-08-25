@@ -178,6 +178,13 @@ public sealed class FaissVectorStore : IVectorStore
             "FAISS index loaded: {Count} vectors from {Path}", Count, indexPath);
     }
 
+    public Task<IReadOnlyList<DocumentChunk>> GetAllChunksAsync(CancellationToken ct = default)
+    {
+        _lock.EnterReadLock();
+        try { return Task.FromResult<IReadOnlyList<DocumentChunk>>(_metadata.Values.ToList()); }
+        finally { _lock.ExitReadLock(); }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private void EnsureIndex()
