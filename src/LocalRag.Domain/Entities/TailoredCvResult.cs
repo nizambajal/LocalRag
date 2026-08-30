@@ -23,7 +23,7 @@ public class TailoredCvSection
 }
 
 /// <summary>
-/// Master prompt §10 output: a tailored CV that stays truthful to the
+/// a tailored CV that stays truthful to the
 /// source CV, with missing skills listed separately rather than implied.
 /// </summary>
 public class TailoredCvResult

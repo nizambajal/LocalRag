@@ -70,7 +70,7 @@ public sealed class CvSearchTools
                 WriteIndented = false
             });
 
-            ToolAudit.LogResult(_logger, "search_my_cv", json.Length);
+            ToolAudit.LogResult(_logger, "search_my_cv", json);
             return json;
         }
         catch (Exception ex)

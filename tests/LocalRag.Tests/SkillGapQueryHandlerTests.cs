@@ -8,7 +8,6 @@ namespace LocalRag.Tests;
 
 /// <summary>
 /// Tests the hallucination-protection guarantees in <see cref="SkillGapQueryHandler"/>
-/// (master prompt §24 "Hallucination Protection" / §16 guardrails #1-2):
 /// a skill is classified "Missing" deterministically — without ever calling the
 /// LLM classifier — whenever hybrid search returns no evidence.
 /// </summary>

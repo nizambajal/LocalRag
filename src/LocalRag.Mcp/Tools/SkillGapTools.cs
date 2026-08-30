@@ -60,7 +60,7 @@ public sealed class SkillGapTools
                 Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             });
 
-            ToolAudit.LogResult(_logger, "compare_skills", json.Length);
+            ToolAudit.LogResult(_logger, "compare_skills", json);
             return json;
         }
         catch (Exception ex)

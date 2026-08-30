@@ -11,7 +11,7 @@ using ModelContextProtocol.Server;
 namespace LocalRag.Mcp.Tools;
 
 /// <summary>
-/// Exposes interview preparation as an MCP tool (master prompt §8). Wraps
+/// Exposes interview preparation as an MCP tool. Wraps
 /// <see cref="InterviewPrepQuery"/>, which internally reuses the skill-gap
 /// workflow so questions and evidence stay consistent with compare_skills.
 /// </summary>
@@ -57,7 +57,7 @@ public sealed class InterviewPrepTools
                 Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             });
 
-            ToolAudit.LogResult(_logger, "prepare_interview", json.Length);
+            ToolAudit.LogResult(_logger, "prepare_interview", json);
             return json;
         }
         catch (Exception ex)

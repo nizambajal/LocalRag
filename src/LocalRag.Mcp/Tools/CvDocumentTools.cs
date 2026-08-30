@@ -10,10 +10,9 @@ namespace LocalRag.Mcp.Tools;
 
 /// <summary>
 /// Exposes full reconstructed CV text as an MCP tool. This is the data
-/// source for §12's sandboxed quality-check flow: the agent calls this,
+/// source for sandboxed quality-check flow: the agent calls this,
 /// writes a check script, and runs it in TrueForge's sandbox (Code Mode) —
-/// no quality-check logic lives in this codebase, by design (see §12:
-/// "Do NOT execute arbitrary code on the host machine").
+/// no quality-check logic lives in this codebase, by design.
 /// </summary>
 [McpServerToolType]
 public sealed class CvDocumentTools
@@ -57,7 +56,7 @@ public sealed class CvDocumentTools
             // Deliberately log only the byte length, never the CV text itself —
             // guardrail #5: "Never expose private CV data unnecessarily," which
             // extends to logs, not just tool responses.
-            ToolAudit.LogResult(_logger, "get_full_cv_text", json.Length);
+            ToolAudit.LogResult(_logger, "get_full_cv_text", json);
             return json;
         }
         catch (Exception ex)

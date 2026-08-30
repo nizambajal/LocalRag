@@ -1,8 +1,7 @@
 ﻿namespace LocalRag.Mcp.Validation;
 
 /// <summary>
-/// Basic tool-input validation (master prompt §16, guardrail #6: "Validate
-/// tool inputs"). Deliberately simple bounds checks — this is a personal
+/// Basic tool-input validation. Deliberately simple bounds checks — this is a personal
 /// local tool with one caller (the agent), not a public API needing
 /// exhaustive sanitization.
 /// </summary>

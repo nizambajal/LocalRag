@@ -10,12 +10,11 @@ using ModelContextProtocol.Server;
 namespace LocalRag.Mcp.Tools;
 
 /// <summary>
-/// Exposes CV tailoring as an MCP tool (master prompt §10). Deliberately
+/// Exposes CV tailoring as an MCP tool. Deliberately
 /// NOT marked ReadOnly — unlike the other tools, this one produces a
 /// deliverable the candidate would act on, so TrueForge's default
 /// approval policy (require_approval_for_tools: ["@write", "@destructive"])
-/// pauses for human approval before returning results. That satisfies
-/// §11's human-in-the-loop requirement without any custom approval code —
+/// pauses for human approval before returning results.
 /// see scripts/setup-trueforge.sh for how the agent is configured.
 /// </summary>
 [McpServerToolType]
@@ -57,7 +56,7 @@ public sealed class CvTailoringTools
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            ToolAudit.LogResult(_logger, "generate_tailored_cv", json.Length);
+            ToolAudit.LogResult(_logger, "generate_tailored_cv", json);
             return json;
         }
         catch (Exception ex)

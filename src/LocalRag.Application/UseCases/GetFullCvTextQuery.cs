@@ -11,7 +11,7 @@ public record GetFullCvTextQuery : IRequest<IReadOnlyDictionary<string, string>>
 
 /// <summary>
 /// Reconstructs full document text per source file from indexed chunks.
-/// Exists for §12's sandboxed CV quality-check tool — that script needs
+/// Exists for sandboxed CV quality-check tool — that script needs
 /// the actual CV text (for required-section, duplicate-content, and
 /// formatting checks), not top-K relevance snippets.
 /// </summary>

@@ -21,4 +21,11 @@ public class RagOptions
     public bool OllamaMode { get; set; } = false;
     public string OllamaBaseUrl { get; set; } = "http://localhost:11434";
     public string OllamaModel { get; set; } = "mistral";
+
+    // ── LocalRag.Mcp debug logging ───────────────────────────────────────────
+    /// <summary>
+    /// When true, tool audit logs write FULL request/response content instead of truncated summaries — including CV text. 
+    /// Off by default. Turn on only for local debugging sessions on your own machine, and turn back off afterward.
+    /// </summary>
+    public bool VerboseToolLogging { get; set; } = false;
 }

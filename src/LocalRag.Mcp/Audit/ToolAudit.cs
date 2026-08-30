@@ -3,37 +3,46 @@
 namespace LocalRag.Mcp.Audit;
 
 /// <summary>
-/// Minimal audit trail for MCP tool calls (master prompt §16: "Log important
-/// agent actions" / "Make tool calls observable"). Deliberately logs only
-/// truncated summaries — never full CV text or full tool output — per
-/// guardrail #5 ("Never expose private CV data unnecessarily") and
-/// "Do not log secrets ... or sensitive credentials."
-///
-/// This is a lightweight, per-call helper rather than a global MCP filter
-/// pipeline: the SDK's filter API surface for tool calls specifically
-/// wasn't something we could verify against real docs/behavior in the time
-/// available, and guessing at an unverified API would violate §22's "do not
-/// invent APIs" rule. This achieves the same audit requirement with
-/// standard, unambiguous .NET (ILogger), at the cost of one call per tool
-/// method rather than one central pipeline. Revisit if the SDK's tool-call
-/// filter API is confirmed later.
+/// Set <see cref="VerboseEnabled"/> (via RagOptions.VerboseToolLogging) to
+/// log FULL request/response content instead, for local debugging only.
+/// Every log line still goes through the standard ILogger pipeline, which
+/// Program.cs wires to both console and a rolling file
+/// (logs/localrag-mcp-.log) — see Program.cs for the Serilog config.
 /// </summary>
 internal static class ToolAudit
 {
     private const int MaxSummaryLength = 120;
 
-    public static void LogCall(ILogger logger, string toolName, string inputSummary)
+    /// <summary>
+    /// Global switch, set once at startup from RagOptions.VerboseToolLogging.
+    /// Deliberately a static bool rather than DI-injected per-call state —
+    /// this is a debug utility, not a service with meaningful per-request
+    /// configuration, so the extra ceremony isn't worth it here.
+    /// </summary>
+    public static bool VerboseEnabled { get; set; } = false;
+
+    public static void LogCall(ILogger logger, string toolName, string fullInput)
     {
+        var shown = VerboseEnabled ? fullInput : Truncate(fullInput);
         logger.LogInformation(
             "[audit] tool={Tool} input={Input}",
-            toolName, Truncate(inputSummary));
+            toolName, shown);
     }
 
-    public static void LogResult(ILogger logger, string toolName, int outputLength)
+    public static void LogResult(ILogger logger, string toolName, string fullOutput)
     {
-        logger.LogInformation(
-            "[audit] tool={Tool} status=ok outputLength={Length}",
-            toolName, outputLength);
+        if (VerboseEnabled)
+        {
+            logger.LogInformation(
+                "[audit] tool={Tool} status=ok outputLength={Length} output={Output}",
+                toolName, fullOutput.Length, fullOutput);
+        }
+        else
+        {
+            logger.LogInformation(
+                "[audit] tool={Tool} status=ok outputLength={Length}",
+                toolName, fullOutput.Length);
+        }
     }
 
     public static void LogError(ILogger logger, string toolName, Exception ex)

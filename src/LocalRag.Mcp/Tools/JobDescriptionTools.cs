@@ -51,7 +51,7 @@ public sealed class JobDescriptionTools
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            ToolAudit.LogResult(_logger, "analyze_job_description", json.Length);
+            ToolAudit.LogResult(_logger, "analyze_job_description", json);
             return json;
         }
         catch (Exception ex)
