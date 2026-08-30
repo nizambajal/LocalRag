@@ -53,6 +53,54 @@ public static class InfrastructureServiceExtensions
             return new LocalChatService(opts, logger, http);
         });
 
+        // ── Job Description Extraction (structured extraction via Ollama) ──────
+        services.AddSingleton<IJobDescriptionExtractor>(sp =>
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            var http = factory.CreateClient("ollama");
+            var opts = sp.GetRequiredService<Microsoft.Extensions.Options
+                            .IOptions<RagOptions>>();
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging
+                            .ILogger<OllamaJobDescriptionExtractor>>();
+            return new OllamaJobDescriptionExtractor(opts, logger, http);
+        });
+
+        // ── Skill Classification (evidence-grounded, via Ollama) ───────────────
+        services.AddSingleton<ISkillClassifier>(sp =>
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            var http = factory.CreateClient("ollama");
+            var opts = sp.GetRequiredService<Microsoft.Extensions.Options
+                            .IOptions<RagOptions>>();
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging
+                            .ILogger<OllamaSkillClassifier>>();
+            return new OllamaSkillClassifier(opts, logger, http);
+        });
+
+        // ── Interview Question Generation (grounded via Ollama) ────────────────
+        services.AddSingleton<IInterviewQuestionGenerator>(sp =>
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            var http = factory.CreateClient("ollama");
+            var opts = sp.GetRequiredService<Microsoft.Extensions.Options
+                            .IOptions<RagOptions>>();
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging
+                            .ILogger<OllamaInterviewQuestionGenerator>>();
+            return new OllamaInterviewQuestionGenerator(opts, logger, http);
+        });
+
+        // ── CV Tailoring (grounded via Ollama) ─────────────────────────────────
+        services.AddSingleton<ICvTailoringGenerator>(sp =>
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            var http = factory.CreateClient("ollama");
+            var opts = sp.GetRequiredService<Microsoft.Extensions.Options
+                            .IOptions<RagOptions>>();
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging
+                            .ILogger<OllamaCvTailoringGenerator>>();
+            return new OllamaCvTailoringGenerator(opts, logger, http);
+        });
+
         // ── Indexing Tracker ──────────────────────────────────────────────────
         services.AddSingleton<IIndexingTracker, InMemoryIndexingTracker>();
         services.AddSingleton<IHybridSearchService, HybridSearchService>();

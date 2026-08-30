@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /src/data/faiss/metadata.json
 /src/data/faiss/lucene/
+
+# LocalRag.Mcp request/response logs — may contain CV text when
+# VerboseToolLogging is enabled; never commit these.
+/src/LocalRag.Mcp/logs/
